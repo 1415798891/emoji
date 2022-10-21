@@ -15,7 +15,7 @@ axios.get(url).then(async (res) => {
   let emoData = res.data.data.list;
   for (let i = 0; i < emoData.length; i++) {
     let icon = emoData[i].icon;
-    let dir = emoData[i].name;
+    let dir = emoData[i].name.replaceAll(' ', '_');
     let endfix = icon.split('.').at(-1);
     let infoData = {
       name: '',
@@ -25,10 +25,10 @@ axios.get(url).then(async (res) => {
     if (icon == '' || dir == '') continue;
 
     // 创建目录
-    // fs.mkdirSync(`./emotion/${dir}`);
+    // fs.mkdirSync(`./${dir}`);
 
     // 判断文件是否已存在
-    let cover = fs.existsSync(`./emotion/${dir}/${dir}.${endfix}`)
+    let cover = fs.existsSync(`./${dir}/${dir}.${endfix}`)
     if (!cover) {
       let img = await axios.get(icon, {
         responseType: 'arraybuffer',
@@ -40,9 +40,9 @@ axios.get(url).then(async (res) => {
     infoData.icon = `${dir}.${endfix}`;
     infoData.items.push(`${dir}.${endfix}`)
     for (let j = 0; j < emoData[i].list.length; j++) {
-      // await sleep(500);
+      await sleep(50);
       let icon = emoData[i].list[j].icon;
-      let name = emoData[i].list[j].name;
+      let name = emoData[i].list[j].name.replaceAll(' ', '_');
       let endfix = icon.split('.').at(-1);
       if (icon == '' || dir == '') continue;
       infoData.items.push(`${name}.${endfix}`);
@@ -52,11 +52,11 @@ axios.get(url).then(async (res) => {
         let img = await axios.get(icon, {
           responseType: 'arraybuffer',
         });
-        fs.writeFileSync(`.${dir}/${name}.${endfix}`, img.data);
+        fs.writeFileSync(`./${dir}/${name}.${endfix}`, img.data);
         console.log(`${dir} ${name}下载成功`);
       }
     }
-    console.log(infoData);
+    // console.log(infoData);
     fs.writeFileSync(`./${dir}/info.json`, JSON.stringify(infoData));
   }
 })
